@@ -2,7 +2,8 @@
 
 Multiple users can edit the same document in real-time.
 Support Insert and Delete operations.
-Operational Transformation (OT) to resolve conflicts when users edit simultaneously.
+Operational Transformation (OT) to resolve conflicts when users edit simultaneously. 
+  (OT Meaning: Transforms an operation according to previously executed concurrent operations so all users eventually see same document state.)
 Maintain document consistency across all users.
 Track operation history for transformation.
 Show basic user activity.
