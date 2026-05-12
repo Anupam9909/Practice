@@ -48,6 +48,113 @@
 
 5. UML Diagram      https://drive.google.com/file/d/13jgI8gUJhnwyv9sdkkuWrkB1jPCn-GgD/view?usp=sharing
 
+
+@startuml
+skinparam classAttributeIconSize 0
+
+enum SeatType {
+  ECONOMY, BUSINESS, FIRST_CLASS
+  '' Different seat classes with different pricing and facilities
+}
+
+enum SeatStatus {
+  AVAILABLE, BOOKED
+  '' Current status of each seat
+}
+
+class City {
+  - String name               // Name of the city
+  - String airportCode        // Airport code (e.g., DEL, BOM, BLR)
+  + City(String name, String airportCode)
+  '' Represents a city with airport
+}
+
+class Airline {
+  - String name
+  + Airline(String name)
+  '' Airline company operating flights
+}
+
+class Flight {
+  - String flightNumber
+  - Airline airline
+  - City source
+  - City destination
+  - int durationMinutes
+  + Flight(String flightNumber, Airline airline, City source, City destination, int duration)
+  '' Defines a flight route between two cities
+}
+
+class FlightSchedule {
+  - int scheduleId
+  - Flight flight
+  - LocalDateTime departureTime
+  - List<Seat> seats
+  + FlightSchedule(int scheduleId, Flight flight, LocalDateTime departureTime)
+  + List<Seat> getAvailableSeats()      // Returns currently available seats
+  + boolean bookSeats(List<Seat> seats) // Books seats if all are available
+  '' Specific departure of a flight on a particular date and time
+}
+
+class Seat {
+  - int seatNumber
+  - SeatType seatType
+  - SeatStatus status
+  + Seat(int seatNumber, SeatType seatType)
+  + boolean isAvailable()
+  + void bookSeat()
+  '' Individual seat in a flight schedule
+}
+
+class Passenger {
+  - String name               // Passenger full name
+  - String passportNumber     // Passport or government ID
+  + Passenger(String name, String passportNumber)
+  '' Represents a traveler
+}
+
+class Booking {
+  - int bookingId
+  - FlightSchedule schedule
+  - List<Seat> seats
+  - List<Passenger> passengers
+  - LocalDateTime bookingTime
+  + Booking(FlightSchedule schedule, List<Seat> seats, List<Passenger> passengers)
+  '' Confirmed ticket / reservation record
+}
+
+class FlightBookingService {
+  - List<City> cities
+  - List<Flight> flights
+  - List<FlightSchedule> schedules     // Persistent list of all flight schedules
+  + FlightBookingService()
+  + void addCity(City city)
+  + void addFlight(Flight flight)      // Also creates sample schedules
+  + List<FlightSchedule> searchFlights(String sourceCode, String destinationCode, LocalDate date)
+  + Booking bookTicket(FlightSchedule schedule, List<Seat> seats, List<Passenger> passengers)
+  '' Main facade/service class for all operations
+}
+
+Flight "1" --> "1" Airline
+Flight "1" --> "1" City : source
+Flight "1" --> "1" City : destination
+Flight "1" *-- "many" FlightSchedule
+FlightSchedule "1" *-- "many" Seat
+Seat --> SeatType
+Seat --> SeatStatus
+Booking --> FlightSchedule
+Booking "1" *-- "many" Seat
+Booking "1" *-- "many" Passenger
+FlightBookingService --> City
+FlightBookingService --> Flight
+FlightBookingService --> FlightSchedule
+@enduml
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+code:
+
 import java.time.*;
 import java.util.*;
 
